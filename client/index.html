@@ -6,7 +6,6 @@
     ctx.font = '30px Arial';
 
     var socket = io.connect();
-    var randomConnection = Math.random();
 
     // ao executar no cliente, pega a informação do servidor e exibe no client.
     socket.on('newPositions', function (data) {
@@ -20,8 +19,8 @@
     });
 
     // ao executar no cliente, envia para o servidor a informação e exibe no servidor.
-    var reset = function(){
-        socket.emit('reset', { msg: 'RESET!' });
+    var reset = function(data){
+        socket.emit('reset', { msg: 'CLICK RESET!' });
     }
 
     // ao executar no cliente, pega a informação do servidor e exibe no client.

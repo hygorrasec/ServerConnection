@@ -18,18 +18,18 @@ io.on('connection', function (socket) {
     socket.number = "" + Math.floor(10 * Math.random());
     SOCKET_LIST[socket.id] = socket;
 
-    console.log("User connected.");
+    console.log('User ' + socket.number + ' connected.');
     socket.on('reset', function (data) {
+        console.log('Resetou a posição x:' + socket.x + ' e y:' + socket.y + ' para x:0 e y:0 do user: ' + socket.number + ' | ' + data.msg);
         socket.x = 0;
         socket.y = 0;
-        console.log('Resetou a posição x:' + posXatual + ' e y:' + posYatual + ' para x:0 e y:0 do user: ' + socket.number + ' | ' + data.msg);
     });
 
     socket.emit('serverMsg', { msg: '<msg do servidor>' });
 
     socket.on('disconnect', function () {
         delete SOCKET_LIST[socket.id];
-        console.log('User disconnected.');
+        console.log('User ' + socket.number + ' disconnected.');
     });
 });
 
