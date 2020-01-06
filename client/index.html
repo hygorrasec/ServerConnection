@@ -1,0 +1,33 @@
+<canvas id="ctx" width="300" height="300" style="border: 1px solid #000000;"></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+<script>
+    var ctx = document.getElementById("ctx").getContext("2d");
+    ctx.font = '30px Arial';
+
+    var socket = io.connect();
+    var randomConnection = Math.random();
+
+    // ao executar no cliente, pega a informação do servidor e exibe no client.
+    socket.on('newPositions', function (data) {
+        ctx.clearRect(0,0,300,300);
+        for(var i = 0; i < data.length; i++){
+            var numUser = data[i].number;
+            var posX = data[i].x;
+            var posY = data[i].y;
+            ctx.fillText(numUser,posX,posY);
+        }
+    });
+
+    // ao executar no cliente, envia para o servidor a informação e exibe no servidor.
+    var reset = function(){
+        socket.emit('reset', { msg: 'RESET!' });
+    }
+
+    // ao executar no cliente, pega a informação do servidor e exibe no client.
+    socket.on('serverMsg', function (data) {
+        console.log('<msg do client>..' + data.msg);
+    });
+</script>
+
+<button onclick="reset()">Resetar</button>
