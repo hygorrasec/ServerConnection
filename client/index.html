@@ -1,3 +1,4 @@
+<p>Para andar use: A | W | S | D</p>
 <canvas id="ctx" width="300" height="300" style="border: 1px solid #000000;"></canvas>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
@@ -8,7 +9,7 @@
     var socket = io.connect();
 
     // ao executar no cliente, pega a informação do servidor e exibe no client.
-    socket.on('newPositions', function (data) {
+    socket.on('newPositions',function(data){
         ctx.clearRect(0,0,300,300);
         for(var i = 0; i < data.length; i++){
             var numUser = data[i].number;
@@ -19,14 +20,33 @@
     });
 
     // ao executar no cliente, envia para o servidor a informação e exibe no servidor.
-    var reset = function(data){
-        socket.emit('reset', { msg: 'CLICK RESET!' });
+    var reset = function(){
+        socket.emit('reset',{msg:'CLICKED RESET!'});
     }
 
-    // ao executar no cliente, pega a informação do servidor e exibe no client.
-    socket.on('serverMsg', function (data) {
-        console.log('<msg do client>..' + data.msg);
-    });
-</script>
+    document.onkeydown = function(event){
+        if(event.keyCode === 87){   // w
+            socket.emit('keyPress',{inputId:'up',state:true});
+        }else if(event.keyCode === 68){   // d
+            socket.emit('keyPress',{inputId:'right',state:true});
+        }else if(event.keyCode === 83){   // s
+            socket.emit('keyPress',{inputId:'down',state:true});
+        }else if(event.keyCode === 65){   // a
+            socket.emit('keyPress',{inputId:'left',state:true});
+        }
+    }
 
+    document.onkeyup = function(event){
+        if(event.keyCode === 87){   // w
+            socket.emit('keyPress',{inputId:'up',state:false});
+        }else if(event.keyCode === 68){   // d
+            socket.emit('keyPress',{inputId:'right',state:false});
+        }else if(event.keyCode === 83){   // s
+            socket.emit('keyPress',{inputId:'down',state:false});
+        }else if(event.keyCode === 65){   // a
+            socket.emit('keyPress',{inputId:'left',state:false});
+        }
+    }
+</script>
+<br>
 <button onclick="reset()">Resetar</button>

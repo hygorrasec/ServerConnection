@@ -10,39 +10,84 @@ app.get('/', function (req, res) {
 });
 
 var SOCKET_LIST = {};
+var PLAYER_LIST = {};
+var posXStart = 150;
+var posYStart = 150;
+var maxSpdStart = 10;
+
+var Player = function(id){
+    var self = {
+        id:id,
+        x:posXStart,
+        y:posYStart,
+        number:"" + Math.floor(10 * Math.random()),
+        pressingUp:false,
+        pressingRight:false,
+        pressingDown:false,
+        pressingLeft:false,
+        maxSpd:maxSpdStart
+    }
+    self.updatePosition = function(){
+        if(self.pressingUp){
+            self.y -= self.maxSpd;
+        }else if(self.pressingRight){
+            self.x += self.maxSpd;
+        }else if(self.pressingDown){
+            self.y += self.maxSpd;
+        }else if(self.pressingLeft){
+            self.x -= self.maxSpd;
+        }
+    }
+    return self;
+}
 
 io.on('connection', function (socket) {
+    // gera um número randômico para cada jogador que conectar ao socket.
     socket.id = Math.random();
-    socket.x = 0;
-    socket.y = 0;
-    socket.number = "" + Math.floor(10 * Math.random());
     SOCKET_LIST[socket.id] = socket;
 
-    console.log('User ' + socket.number + ' connected.');
-    socket.on('reset', function (data) {
-        console.log('Resetou a posição x:' + socket.x + ' e y:' + socket.y + ' para x:0 e y:0 do user: ' + socket.number + ' | ' + data.msg);
-        socket.x = 0;
-        socket.y = 0;
+    // a variável player pega o array do jogador.
+    var player = Player(socket.id);
+    PLAYER_LIST[socket.id] = player;
+
+    console.log('User ' + player.number + ' connected.');
+
+    socket.on('reset',function(data){
+        console.log('Resetou a posição x:' + player.x + ' e y:' + player.y + ' para x:' + posXStart + ' e y:' + posYStart + ' do user: ' + player.number + ' | ' + data.msg);
+        player.x = posXStart;
+        player.y = posYStart;
     });
 
-    socket.emit('serverMsg', { msg: '<msg do servidor>' });
-
-    socket.on('disconnect', function () {
+    socket.on('disconnect',function(){
         delete SOCKET_LIST[socket.id];
-        console.log('User ' + socket.number + ' disconnected.');
+        delete PLAYER_LIST[socket.id];
+        console.log('User ' + player.number + ' disconnected.');
+    });
+
+    socket.on('keyPress',function(data){
+        if(data.inputId === 'up'){
+            player.pressingUp = data.state;
+        }else if(data.inputId === 'right'){
+            player.pressingRight = data.state;
+        }else if(data.inputId === 'down'){
+            player.pressingDown = data.state;
+        }else if(data.inputId === 'left'){
+            player.pressingLeft = data.state;
+        }
     });
 });
 
 setInterval(function(){
     var pack = [];
-    for(var i in SOCKET_LIST){
-        var socket = SOCKET_LIST[i];
-        posXatual = socket.x++;
-        posYatual = socket.y++;
+    for(var i in PLAYER_LIST){
+        var player = PLAYER_LIST[i];
+        player.updatePosition();
+        posXatual = player.x;
+        posYatual = player.y;
         pack.push({
             x:posXatual,
             y:posYatual,
-            number:socket.number
+            number:player.number
         });
     }
     for(var i in SOCKET_LIST){
