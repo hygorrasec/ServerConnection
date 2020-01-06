@@ -1,52 +1,63 @@
-<p>Para andar use: A | W | S | D</p>
-<canvas id="ctx" width="300" height="300" style="border: 1px solid #000000;"></canvas>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+</head>
+<body>
+    <p>Para andar use: A | W | S | D</p>
+    <canvas id="ctx" width="300" height="300" style="border: 1px solid #000000;"></canvas>
+    <br>
+    <button onclick="reset()">Resetar</button>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-<script>
-    var ctx = document.getElementById("ctx").getContext("2d");
-    ctx.font = '30px Arial';
+    <script>
+        var ctx = document.getElementById("ctx").getContext("2d");
+        ctx.font = '30px Arial';
 
-    var socket = io.connect();
+        var socket = io.connect();
 
-    // ao executar no cliente, pega a informação do servidor e exibe no client.
-    socket.on('newPositions',function(data){
-        ctx.clearRect(0,0,300,300);
-        for(var i = 0; i < data.length; i++){
-            var numUser = data[i].number;
-            var posX = data[i].x;
-            var posY = data[i].y;
-            ctx.fillText(numUser,posX,posY);
+        // ao executar no cliente, pega a informação do servidor e exibe no client.
+        socket.on('newPositions',function(data){
+            ctx.clearRect(0,0,300,300);
+            for(var i = 0; i < data.length; i++){
+                var numUser = data[i].number;
+                var posX = data[i].x;
+                var posY = data[i].y;
+                ctx.fillText(numUser,posX,posY);
+            }
+        });
+
+        // ao executar no cliente, envia para o servidor a informação e exibe no servidor.
+        var reset = function(){
+            socket.emit('reset',{msg:'CLICKED RESET!'});
         }
-    });
 
-    // ao executar no cliente, envia para o servidor a informação e exibe no servidor.
-    var reset = function(){
-        socket.emit('reset',{msg:'CLICKED RESET!'});
-    }
-
-    document.onkeydown = function(event){
-        if(event.keyCode === 87){   // w
-            socket.emit('keyPress',{inputId:'up',state:true});
-        }else if(event.keyCode === 68){   // d
-            socket.emit('keyPress',{inputId:'right',state:true});
-        }else if(event.keyCode === 83){   // s
-            socket.emit('keyPress',{inputId:'down',state:true});
-        }else if(event.keyCode === 65){   // a
-            socket.emit('keyPress',{inputId:'left',state:true});
+        document.onkeydown = function(event){
+            if(event.keyCode === 87){   // w
+                socket.emit('keyPress',{inputId:'up',state:true});
+            }else if(event.keyCode === 68){   // d
+                socket.emit('keyPress',{inputId:'right',state:true});
+            }else if(event.keyCode === 83){   // s
+                socket.emit('keyPress',{inputId:'down',state:true});
+            }else if(event.keyCode === 65){   // a
+                socket.emit('keyPress',{inputId:'left',state:true});
+            }
         }
-    }
 
-    document.onkeyup = function(event){
-        if(event.keyCode === 87){   // w
-            socket.emit('keyPress',{inputId:'up',state:false});
-        }else if(event.keyCode === 68){   // d
-            socket.emit('keyPress',{inputId:'right',state:false});
-        }else if(event.keyCode === 83){   // s
-            socket.emit('keyPress',{inputId:'down',state:false});
-        }else if(event.keyCode === 65){   // a
-            socket.emit('keyPress',{inputId:'left',state:false});
+        document.onkeyup = function(event){
+            if(event.keyCode === 87){   // w
+                socket.emit('keyPress',{inputId:'up',state:false});
+            }else if(event.keyCode === 68){   // d
+                socket.emit('keyPress',{inputId:'right',state:false});
+            }else if(event.keyCode === 83){   // s
+                socket.emit('keyPress',{inputId:'down',state:false});
+            }else if(event.keyCode === 65){   // a
+                socket.emit('keyPress',{inputId:'left',state:false});
+            }
         }
-    }
-</script>
-<br>
-<button onclick="reset()">Resetar</button>
+    </script>
+</body>
+</html>

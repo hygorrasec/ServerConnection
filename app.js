@@ -30,11 +30,14 @@ var Player = function(id){
     self.updatePosition = function(){
         if(self.pressingUp){
             self.y -= self.maxSpd;
-        }else if(self.pressingRight){
+        }
+        if(self.pressingRight){
             self.x += self.maxSpd;
-        }else if(self.pressingDown){
+        }
+        if(self.pressingDown){
             self.y += self.maxSpd;
-        }else if(self.pressingLeft){
+        }
+        if(self.pressingLeft){
             self.x -= self.maxSpd;
         }
     }
