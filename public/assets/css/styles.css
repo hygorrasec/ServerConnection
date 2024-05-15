@@ -1,0 +1,24 @@
+body {
+    background-color: #343a40; /* dark background color */
+    color: #ffffff; /* light text color */
+    padding: 20px;
+}
+
+canvas {
+    background-color: #106c04;
+    border: 1px solid #ffffff; /* white border for canvas */
+    padding: 0px;
+    margin: 0px;
+}
+
+#chat-text {
+    height: 150px;
+    overflow-y: scroll;
+    border: 1px solid #ffffff; /* white border for chat */
+    padding: 5px;
+}
+
+#chat-input {
+    border-radius: 0;
+    margin: 2px 0
+}
